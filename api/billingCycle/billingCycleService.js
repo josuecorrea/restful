@@ -1,4 +1,5 @@
 const BillingCycle = require('./billingCycle')
+const _ = require('lodash')
 
 BillingCycle.methods(['get','post','put','delete'])
 BillingCycle.updateOptions({new: true, runValidators: true})//retorna obj atualizado apos update
@@ -10,7 +11,16 @@ function sendErrorsOrNext(req, res, next){
     if(bundle.errors){
         var errors = parseErrors(bundle.erros)
         res.status(500).json({errors})
+    }else{
+        next()
     }
+}
+
+function parseErrors(nodeRestfulErrors){
+    const errors = []
+    _.forIn(nodeRestfulErrors, error => errors.push(error.message))
+    return errors
+
 }
 
 BillingCycle.route('count', function(req, res, next){
